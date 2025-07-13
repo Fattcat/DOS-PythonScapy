@@ -57,7 +57,7 @@ class ARPSpoofApp:
     def create_widgets(self):
         """Create all GUI components"""
         style = ttk.Style()
-        style.configure('TFrame', background='#f0f0f0')
+        style.configure('TFrame', background="#FFFFFF")
         style.configure('TButton', 
                       font=('Segoe UI', 10),
                       foreground='white',
@@ -280,16 +280,21 @@ class ARPSpoofApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    
+    root.iconbitmap("GreenSkull.ico")
+    root.minsize(800,640)
+    root.maxsize(830,700)
     # Configure styles
-    style = ttk.Style(root)
-    style.configure('Accent.TButton', background='#2ecc71')
-    style.map('Accent.TButton',
-             background=[('pressed', '#27ae60'), ('active', '#2ecc71')])
-    style.configure('Stop.TButton', background='#e74c3c')
-    style.map('Stop.TButton',
-             background=[('pressed', '#c0392b'), ('active', '#e74c3c')])
-    
+    style = ttk.Style()
+    style.theme_use('default')
+
+    style.configure('TButton',
+                    font=('Segoe UI', 10),
+                    foreground='black',
+                    background='#d9d9d9',
+                    padding=6)
+
+    style.map('TButton',
+            background=[('active', '#c0c0c0')],
+            foreground=[('disabled', '#a0a0a0')])
     app = ARPSpoofApp(root)
     root.mainloop()
-  
