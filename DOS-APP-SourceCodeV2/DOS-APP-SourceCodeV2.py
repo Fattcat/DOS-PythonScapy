@@ -6,6 +6,10 @@ import time
 import tkinter as tk
 from tkinter import ttk, messagebox
 from concurrent.futures import ThreadPoolExecutor
+from s_table import arp
+# without s_table it DOES NOT WORK as ecpected
+# INSTALL module 
+# arp = Arp(interfc, target, mode="spoof")
 
 class ARPSpoofApp:
     def __init__(self, root):
