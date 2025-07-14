@@ -7,16 +7,52 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from concurrent.futures import ThreadPoolExecutor
 import sys, os
-from s_table import arp
-# without s_table it DOES NOT WORK as ecpected
-# INSTALL module 
-# arp = Arp(interfc, target, mode="spoof")
+import AppConfig
+
+##################################################
+CurrentVersion = AppConfig.Version()
+
+MaxRetries = 3
+retry_count = 0
+
+if AppConfig.internet_ok(host="8.8.8.8", port=53):
+    print("Internet OK")
+else:
+    while retry_count < MaxRetries:
+        print("Nie je internet ... pokus", retry_count + 1)
+        retry_count += 1
+        time.sleep(2)
+        AppConfig.refresh_internet()
+        if AppConfig.internet_ok(host="8.8.8.8", port=53):
+            print("Internet OK (po obnove)")
+            break
+
+    if retry_count == MaxRetries:
+        print("\n\n! Internet nie je vôbec dostupný !\n\n")
+        sys.exit(1)
+
+if AppConfig.tor_connected():
+    print("pripojené k TOR sieti")
+else:
+    print("TOR sieť nedostupná")
+##################################################
+
+#goFurther = messagebox.askokcancel("! Upozornenie !", "Používaním aplikácie súhlasíte s automatickým pridelením plnej zodpovednosti za prípadné napáchané škody.\n\nOK pre pokračovanie\nZrušiť pre ukončenie")
+#if not goFurther:
+#    sys.exit()
+#
+#time.sleep(0.1)
+#
+#ofurther = messagebox.askokcancel("Povolenie", "Ok pre udelenie povolenia")
+#if not ofurther:
+#    sys.exit()
 
 class ARPSpoofApp:
     def __init__(self, root):
         self.root = root
+        self.root.iconbitmap("icon.ico")
         self.root.title("ARP Spoof Tool")
-        self.root.geometry("800x650")
+        self.root.geometry("800x650+550+200")
         self.root.configure(bg="#f0f0f0")
         
         # Initialize variables
@@ -76,10 +112,34 @@ class ARPSpoofApp:
         
         # Header
         tk.Label(main_frame, 
-               text="ARP Spoof Tool",
+               text=f"ARP Spoof Tool v{CurrentVersion}",
                font=('Segoe UI', 16, 'bold'),
                foreground="#2c3e50",
                background="#f0f0f0").pack(pady=10)
+        
+        tk.Label(main_frame, 
+               text="Použi len 192.168 zariadenia!\nPre vlastné bezpečie",
+               font=('Segoe UI', 10, 'bold'),
+               foreground="#498d2a",
+               background="#f0f0f0").pack(pady=10)
+
+        ttk.Label(main_frame, 
+                #text=f"Server Status:{AppConfig.ServerStatus()}",
+                font=('Segoe UI', 9)).pack(anchor=tk.E, pady=0, padx=10)
+                
+        status = AppConfig.ServerStatus()
+        status_text = f"Server Status: {status}"
+        status_color = "#498d2a" if status =="✅" else "#923408"
+
+        ttk.Label(main_frame,
+                text=status_text,
+                font=('Segoe UI', 9),
+                foreground=status_color,
+                background="#f0f0f0"
+                ).pack(anchor=tk.E, padx=10, pady=10)
+
+
+
 
         # Interface selection
         self.interface_var = tk.StringVar()
@@ -283,42 +343,20 @@ class ARPSpoofApp:
         self.stop_spoof_btn.config(state=tk.DISABLED)
         messagebox.showinfo("Status", "ARP spoofing stopped")
 
-#if __name__ == "__main__":
-#    root = tk.Tk()
-#    root.iconbitmap("GreenSkull.ico")
-#    root.minsize(800,640)
-#    root.maxsize(830,700)
-#    # Configure styles
-#    style = ttk.Style()
-#    style.theme_use('default')
-#
-#    style.configure('TButton',
-#                    font=('Segoe UI', 10),
-#                    foreground='black',
-#                    background='#d9d9d9',
-#                    padding=6)
-#
-#    style.map('TButton',
-#            background=[('active', '#c0c0c0')],
-#            foreground=[('disabled', '#a0a0a0')])
-#    app = ARPSpoofApp(root)
-#    root.mainloop()
-
-def get_resource_path(relative_path):
-    """
-    Zabezpečí správne načítanie súborov pri spustení ako .exe
-    aj ako .py (napr. GreenSkull.ico).
-    """
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.abspath(relative_path)
+def resource_path(relative_path):
+    """Získa cestu k súboru, aj keď je zabalený cez PyInstaller"""
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 if __name__ == "__main__":
     root = tk.Tk()
 
     # Dynamické načítanie ikony
-    ikona_cesta = get_resource_path("GreenSkull.ico")
-    root.iconbitmap(ikona_cesta)
+    #ikona_cesta = resource_path("icon.ico")
+    #root.iconbitmap(ikona_cesta)
 
     root.minsize(800, 640)
     root.maxsize(830, 700)
