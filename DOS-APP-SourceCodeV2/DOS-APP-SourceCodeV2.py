@@ -6,6 +6,7 @@ import time
 import tkinter as tk
 from tkinter import ttk, messagebox
 from concurrent.futures import ThreadPoolExecutor
+import sys, os
 from s_table import arp
 # without s_table it DOES NOT WORK as ecpected
 # INSTALL module 
@@ -282,12 +283,47 @@ class ARPSpoofApp:
         self.stop_spoof_btn.config(state=tk.DISABLED)
         messagebox.showinfo("Status", "ARP spoofing stopped")
 
+#if __name__ == "__main__":
+#    root = tk.Tk()
+#    root.iconbitmap("GreenSkull.ico")
+#    root.minsize(800,640)
+#    root.maxsize(830,700)
+#    # Configure styles
+#    style = ttk.Style()
+#    style.theme_use('default')
+#
+#    style.configure('TButton',
+#                    font=('Segoe UI', 10),
+#                    foreground='black',
+#                    background='#d9d9d9',
+#                    padding=6)
+#
+#    style.map('TButton',
+#            background=[('active', '#c0c0c0')],
+#            foreground=[('disabled', '#a0a0a0')])
+#    app = ARPSpoofApp(root)
+#    root.mainloop()
+
+def get_resource_path(relative_path):
+    """
+    Zabezpečí správne načítanie súborov pri spustení ako .exe
+    aj ako .py (napr. GreenSkull.ico).
+    """
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.abspath(relative_path)
+
 if __name__ == "__main__":
     root = tk.Tk()
-    root.iconbitmap("GreenSkull.ico")
-    root.minsize(800,640)
-    root.maxsize(830,700)
-    # Configure styles
+
+    # Dynamické načítanie ikony
+    ikona_cesta = get_resource_path("GreenSkull.ico")
+    root.iconbitmap(ikona_cesta)
+
+    root.minsize(800, 640)
+    root.maxsize(830, 700)
+
+    # Konfigurácia štýlov
     style = ttk.Style()
     style.theme_use('default')
 
@@ -298,7 +334,8 @@ if __name__ == "__main__":
                     padding=6)
 
     style.map('TButton',
-            background=[('active', '#c0c0c0')],
-            foreground=[('disabled', '#a0a0a0')])
+              background=[('active', '#c0c0c0')],
+              foreground=[('disabled', '#a0a0a0')])
+
     app = ARPSpoofApp(root)
     root.mainloop()
