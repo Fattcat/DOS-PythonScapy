@@ -37,15 +37,15 @@ else:
     print("TOR sieť nedostupná")
 ##################################################
 
-#goFurther = messagebox.askokcancel("! Upozornenie !", "Používaním aplikácie súhlasíte s automatickým pridelením plnej zodpovednosti za prípadné napáchané škody.\n\nOK pre pokračovanie\nZrušiť pre ukončenie")
-#if not goFurther:
-#    sys.exit()
-#
-#time.sleep(0.1)
-#
-#ofurther = messagebox.askokcancel("Povolenie", "Ok pre udelenie povolenia")
-#if not ofurther:
-#    sys.exit()
+goFurther = messagebox.askokcancel("! Upozornenie !", "Používaním aplikácie súhlasíte s automatickým pridelením plnej zodpovednosti za prípadné napáchané škody.\n\nOK pre pokračovanie\nZrušiť pre ukončenie")
+if not goFurther:
+    sys.exit()
+
+time.sleep(0.1)
+
+ofurther = messagebox.askokcancel("Povolenie", "Ok pre udelenie povolenia")
+if not ofurther:
+    sys.exit()
 
 class ARPSpoofApp:
     def __init__(self, root):
