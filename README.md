@@ -7,7 +7,7 @@
 This repository contains a set of several Python3 scripts designed for conducting Denial of Service (DoS) testing in controlled and legal environments. These scripts simulate DoS attacks by sending crafted packets or requests to one or multiple target IP addresses, allowing network administrators and security professionals to assess the robustness and resilience of their systems against such attacks.
 
 **Important:** This tool is intended **only** for authorized testing on networks and systems where you have explicit permission to perform such activities. Unauthorized DoS attacks are illegal and unethical, and may result in severe legal consequences.
-
+- Disable your antivirus (otherwise your antivirus will automatically delete that files)
 ---
 
 ## Requirements
