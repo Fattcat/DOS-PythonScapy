@@ -4,7 +4,7 @@ import socket
 import threading
 import time
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, Canvas
 from concurrent.futures import ThreadPoolExecutor
 import sys, os
 import AppConfig
@@ -51,7 +51,7 @@ class ARPSpoofApp:
     def __init__(self, root):
         self.root = root
         self.root.iconbitmap("icon.ico")
-        self.root.title("ARP Spoof Tool")
+        self.root.title("! NO INTERNET TODAY FOR TARGETS - Created by InstantsOne !")
         self.root.geometry("800x650+550+200")
         self.root.configure(bg="#f0f0f0")
         
@@ -66,6 +66,24 @@ class ARPSpoofApp:
         # Setup UI
         self.setup_interface()
         self.create_widgets()
+
+    def copy_selected_rows(self, event=None):
+        """Kopíruje vybrané riadky z Treeview do systémového clipboardu"""
+        selected_items = self.tree.selection()
+        if not selected_items:
+            return
+
+        rows = []
+        for item in selected_items:
+            values = self.tree.item(item, "values")
+            rows.append("\t".join(values))  # hodnoty oddelené tabulátorom
+
+        clipboard_data = "\n".join(rows)
+
+        # Skopíruj do schránky
+        self.root.clipboard_clear()
+        self.root.clipboard_append(clipboard_data)
+        self.root.update()  # uisti sa, že clipboard sa aktualizuje
 
     def setup_interface(self):
         """Setup network interface info"""
@@ -112,7 +130,7 @@ class ARPSpoofApp:
         
         # Header
         tk.Label(main_frame, 
-               text=f"ARP Spoof Tool v{CurrentVersion}",
+               text=f"No Internet Today (NIT) version{CurrentVersion}",
                font=('Segoe UI', 16, 'bold'),
                foreground="#2c3e50",
                background="#f0f0f0").pack(pady=10)
@@ -123,9 +141,9 @@ class ARPSpoofApp:
                foreground="#498d2a",
                background="#f0f0f0").pack(pady=10)
 
-        ttk.Label(main_frame, 
-                #text=f"Server Status:{AppConfig.ServerStatus()}",
-                font=('Segoe UI', 9)).pack(anchor=tk.E, pady=0, padx=10)
+        #ttk.Label(main_frame, 
+        #        #text=f"Server Status:{AppConfig.ServerStatus()}",
+        #        font=('Segoe UI', 9)).pack(anchor=tk.E, pady=0, padx=10)
                 
         status = AppConfig.ServerStatus()
         status_text = f"Server Status: {status}"
@@ -182,19 +200,26 @@ class ARPSpoofApp:
         self.tree = ttk.Treeview(main_frame,
                                columns=("IP", "MAC", "Hostname"),
                                show="headings",
-                               height=15)
+                               height=15,
+                               selectmode='extended')
         
+        # Nastavenie hlavičiek a stĺpcov
         for col in ("IP", "MAC", "Hostname"):
             self.tree.heading(col, text=col)
             self.tree.column(col, width=150, anchor=tk.W)
-            
+
+        # Pridanie scrollbaru
         scrollbar = ttk.Scrollbar(main_frame,
                                 orient=tk.VERTICAL,
                                 command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
-        
+
+        # Umiesťnenie do rozloženia
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Pridanie podpornej funkcie pre kopírovanie
+        self.tree.bind("<Control-c>", self.copy_selected_rows)
 
         # Target input
         ttk.Label(main_frame,
@@ -242,7 +267,7 @@ class ARPSpoofApp:
             self.tree.delete(item)
             
         threading.Thread(target=self.run_scan, daemon=True).start()
-        
+
     def run_scan(self):
         """Perform network scan in background"""
         self.scanning_active = True
@@ -353,7 +378,6 @@ def resource_path(relative_path):
 
 if __name__ == "__main__":
     root = tk.Tk()
-
     # Dynamické načítanie ikony
     #ikona_cesta = resource_path("icon.ico")
     #root.iconbitmap(ikona_cesta)
