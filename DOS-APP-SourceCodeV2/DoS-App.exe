@@ -1,3 +1,0 @@
-as set value(data, int)
-  instant"_get"
-  data_two = process.POST(data)
